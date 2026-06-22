@@ -80,16 +80,81 @@
             <!-- Read Aloud -->
             <div class="p-6 border border-slate-200 rounded-2xl space-y-2">
                 <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Read Aloud Average</span>
-                <div class="text-3xl font-bold text-slate-950 font-mono">{{ $report->read_aloud_average }}%</div>
+                <div class="text-3xl font-bold text-slate-950 font-mono">{{ number_format($report->read_aloud_average, 2) }}%</div>
                 <p class="text-xs text-slate-600">Paragraph reading accuracy</p>
             </div>
 
             <!-- AI Interview -->
             <div class="p-6 border border-slate-200 rounded-2xl space-y-2">
                 <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">AI Interview Average</span>
-                <div class="text-3xl font-bold text-slate-950 font-mono">{{ $report->interview_average }}%</div>
+                <div class="text-3xl font-bold text-slate-950 font-mono">{{ number_format($report->interview_average, 2) }}%</div>
                 <p class="text-xs text-slate-600">Conversational verbal score</p>
             </div>
+        </div>
+
+        <!-- Averages Breakdown Details (PTE/IELTS style print table) -->
+        <div class="space-y-4">
+            <h3 class="text-lg font-bold text-slate-900 border-b-2 border-slate-900 pb-1">Verbal Competency Breakdown Index</h3>
+            
+            <!-- Language and Accent Meta -->
+            <div class="grid grid-cols-3 gap-4 bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs">
+                <div>
+                    <span class="font-bold text-slate-500">Primary Language:</span>
+                    <span class="font-bold text-slate-900">{{ $report->primary_language }}</span>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-500">Primary Accent:</span>
+                    <span class="font-bold text-slate-900">{{ $report->primary_accent }}</span>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-500">Primary Tone:</span>
+                    <span class="font-bold text-slate-900">{{ $report->primary_tone }}</span>
+                </div>
+            </div>
+
+            <!-- Averages Table -->
+            <table class="w-full text-left text-xs border border-slate-200">
+                <thead>
+                    <tr class="bg-slate-100 border-b border-slate-200">
+                        <th class="p-3 font-bold">Linguistic Parameter</th>
+                        <th class="p-3 font-bold">Average Score / Value</th>
+                        <th class="p-3 font-bold">Linguistic Parameter</th>
+                        <th class="p-3 font-bold">Average Score / Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3 font-semibold bg-slate-50/50">Grammar Quality</td>
+                        <td class="p-3 font-mono">{{ number_format($report->grammar_average, 2) }}%</td>
+                        <td class="p-3 font-semibold bg-slate-50/50">Vocabulary Maturity</td>
+                        <td class="p-3 font-mono">{{ number_format($report->vocabulary_average, 2) }}%</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3 font-semibold bg-slate-50/50">Accuracy Score</td>
+                        <td class="p-3 font-mono">{{ number_format($report->accuracy_average, 2) }}%</td>
+                        <td class="p-3 font-semibold bg-slate-50/50">Content Relevancy</td>
+                        <td class="p-3 font-mono">{{ number_format($report->content_average, 2) }}%</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3 font-semibold bg-slate-50/50">Speaker Confidence</td>
+                        <td class="p-3 font-mono">{{ number_format($report->confidence_average, 2) }}%</td>
+                        <td class="p-3 font-semibold bg-slate-50/50">Pronunciation Clarity</td>
+                        <td class="p-3 font-mono">{{ number_format($report->pronunciation_average, 2) }}%</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3 font-semibold bg-slate-50/50">Fluency Score</td>
+                        <td class="p-3 font-mono">{{ number_format($report->fluency_average, 2) }}%</td>
+                        <td class="p-3 font-semibold bg-slate-50/50">Communication Score</td>
+                        <td class="p-3 font-mono">{{ number_format($report->communication_average, 2) }}%</td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="p-3 font-semibold bg-slate-50/50">Speaking Rate (WPM)</td>
+                        <td class="p-3 font-mono">{{ number_format($report->wpm_average, 2) }} WPM</td>
+                        <td class="p-3 font-semibold bg-slate-50/50">Pauses (Count / Total Duration)</td>
+                        <td class="p-3 font-mono">{{ number_format($report->pause_count_average, 2) }} pauses ({{ number_format($report->pause_duration_average, 2) }}s)</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <!-- Progress Timeline Table -->
@@ -146,8 +211,9 @@
     </div>
 
     <!-- Print on load logic -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        window.addEventListener('load', () => {
+        $(window).on('load', () => {
             // Give layout a short moment to render
             setTimeout(() => {
                 window.print();

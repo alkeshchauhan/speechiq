@@ -23,13 +23,16 @@
         <!-- Metrics Cards Row -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Practices Completed -->
-            <div class="bg-slate-950/40 backdrop-blur border border-slate-800 rounded-2xl p-6 flex items-center justify-between">
-                <div class="space-y-1">
+            <div class="group relative overflow-hidden bg-slate-900/40 backdrop-blur border border-slate-800/80 rounded-2xl p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/5">
+                <!-- Ambient Light Glow -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-indigo-500/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150 animate-pulse"></div>
+
+                <div class="space-y-1 relative z-10">
                     <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Completed Practices</span>
-                    <h3 class="text-3xl font-black text-white font-mono">{{ $totalCompleted }}</h3>
-                    <p class="text-[10px] text-slate-400">Total processed audios</p>
+                    <h3 class="text-3xl font-black text-white font-mono tracking-tight">{{ $totalCompleted }}</h3>
+                    <p class="text-[10px] text-slate-450">Total processed audios</p>
                 </div>
-                <div class="p-3.5 bg-slate-900 rounded-2xl border border-slate-800/80 text-indigo-400">
+                <div class="p-3.5 bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 text-indigo-400 border border-indigo-500/20 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:border-indigo-500/40 relative z-10 shadow-inner">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                     </svg>
@@ -37,13 +40,16 @@
             </div>
 
             <!-- Read Aloud Average -->
-            <div class="bg-slate-950/40 backdrop-blur border border-slate-800 rounded-2xl p-6 flex items-center justify-between">
-                <div class="space-y-1">
+            <div class="group relative overflow-hidden bg-slate-900/40 backdrop-blur border border-slate-800/80 rounded-2xl p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/5">
+                <!-- Ambient Light Glow -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150 animate-pulse"></div>
+
+                <div class="space-y-1 relative z-10">
                     <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Read Aloud Average</span>
-                    <h3 class="text-3xl font-black text-white font-mono">{{ $readAloudAvg }}%</h3>
-                    <p class="text-[10px] text-slate-400">Accuracy & pronunciation</p>
+                    <h3 class="text-3xl font-black text-white font-mono tracking-tight">{{ $readAloudAvg }}%</h3>
+                    <p class="text-[10px] text-slate-450">Accuracy & pronunciation</p>
                 </div>
-                <div class="p-3.5 bg-slate-900 rounded-2xl border border-slate-800/80 text-cyan-400">
+                <div class="p-3.5 bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 text-cyan-400 border border-cyan-500/20 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:border-cyan-500/40 relative z-10 shadow-inner">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                     </svg>
@@ -51,19 +57,22 @@
             </div>
 
             <!-- AI Interview Average / Overall report score link -->
-            <div class="bg-slate-950/40 backdrop-blur border border-slate-800 rounded-2xl p-6 flex items-center justify-between">
-                <div class="space-y-1">
+            <div class="group relative overflow-hidden bg-slate-900/40 backdrop-blur border border-slate-800/80 rounded-2xl p-6 flex items-center justify-between transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/5">
+                <!-- Ambient Light Glow -->
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl transition-all duration-500 group-hover:scale-150 animate-pulse"></div>
+
+                <div class="space-y-1 relative z-10">
                     <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">AI Interview Average</span>
-                    <h3 class="text-3xl font-black text-white font-mono">{{ $interviewAvg }}%</h3>
+                    <h3 class="text-3xl font-black text-white font-mono tracking-tight">{{ $interviewAvg }}%</h3>
                     @if($report)
-                        <a href="{{ route('practice.reports.index') }}" class="text-[10px] text-indigo-400 font-bold hover:text-indigo-300 flex items-center gap-1 mt-1">
+                        <a href="{{ route('practice.reports.index') }}" class="text-[10px] text-emerald-400 font-bold hover:text-emerald-300 flex items-center gap-1 mt-1">
                             View Report (Overall: {{ $report->overall_score }}%) &rarr;
                         </a>
                     @else
-                        <p class="text-[10px] text-slate-400">No consolidated report compiled</p>
+                        <p class="text-[10px] text-slate-450">No consolidated report compiled</p>
                     @endif
                 </div>
-                <div class="p-3.5 bg-slate-900 rounded-2xl border border-slate-800/80 text-indigo-400">
+                <div class="p-3.5 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 text-emerald-400 border border-emerald-500/20 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:border-emerald-500/40 relative z-10 shadow-inner">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>

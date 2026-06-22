@@ -12,6 +12,116 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/run-migrations-speechiq', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return 'Migration & Config clear complete: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/check-columns-speechiq', function() {
+    try {
+        $columns = \Illuminate\Support\Facades\Schema::getColumnListing('interview_results');
+        return response()->json($columns);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/restart-queue-speechiq', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('queue:restart');
+        return 'Queue restart signalled: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/run-queue-speechiq', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('queue:work', [
+            '--stop-when-empty' => true
+        ]);
+        return 'Queue processed: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/run-migrate-direct', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', [
+            '--path' => 'database/migrations/2026_06_22_120000_add_report_details_to_analysis_reports_table.php',
+            '--force' => true
+        ]);
+        return 'Migration status: ' . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/list-migrations-speechiq', function() {
+    try {
+        $migrations = \DB::table('migrations')->get();
+        return response()->json($migrations);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/check-columns-analysis-reports', function() {
+    try {
+        $columns = \Illuminate\Support\Facades\Schema::getColumnListing('analysis_reports');
+        return response()->json($columns);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/check-columns-read-aloud', function() {
+    try {
+        $columns = \Illuminate\Support\Facades\Schema::getColumnListing('read_aloud_results');
+        return response()->json($columns);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/debug-recordings-speechiq', function() {
+    try {
+        $recordings = \App\Models\AudioRecording::with(['interviewResult', 'readAloudResult'])->latest()->take(5)->get();
+        return response()->json($recordings);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
+Route::get('/process-recording-55', function() {
+    try {
+        $recording = \App\Models\AudioRecording::find(55);
+        if (!$recording) return 'Recording 55 not found';
+        
+        $job = new \App\Jobs\AnalyzeInterviewJob($recording, "Tell me about yourself and your primary technical stack.");
+        app()->call([$job, 'handle']);
+        return 'Processed recording 55 successfully!';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString();
+    }
+});
+
+Route::get('/check-settings-speechiq', function() {
+    try {
+        $settings = \DB::table('settings')->get();
+        return response()->json($settings);
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'candidateDashboard'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

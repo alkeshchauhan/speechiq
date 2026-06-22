@@ -34,7 +34,7 @@ class SettingController extends Controller
         $data = $request->validated();
 
         // Handle boolean fields which are not sent if unchecked
-        $booleans = ['ENABLE_AI_INTERVIEW', 'ENABLE_READ_ALOUD', 'ENABLE_TTS', 'ENABLE_STT'];
+        $booleans = ['ENABLE_AI_INTERVIEW', 'ENABLE_READ_ALOUD', 'ENABLE_TTS', 'ENABLE_STT', 'ENABLE_REPORTS'];
         foreach ($booleans as $boolKey) {
             $data[$boolKey] = $request->has($boolKey);
         }
@@ -53,7 +53,7 @@ class SettingController extends Controller
             'target' => 'required|in:fastapi,gemini'
         ]);
  
-        $result = $this->settingService->testConnection($request->input('target'));
+        $result = $this->settingService->testConnection($request->input('target'), $request->all());
  
         return response()->json($result);
     }

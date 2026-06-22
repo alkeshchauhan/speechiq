@@ -46,6 +46,7 @@ class AnalyzeReadAloudJob implements ShouldQueue
             $resultRepo->create([
                 'audio_recording_id' => $this->audioRecording->id,
                 'transcript' => $analysis['transcript'] ?? '',
+                'language' => $analysis['language'] ?? '',
                 'pronunciation_score' => $analysis['pronunciation_score'] ?? 0,
                 'fluency_score' => $analysis['fluency_score'] ?? 0,
                 'accuracy_score' => $analysis['accuracy_score'] ?? 0,
@@ -61,6 +62,8 @@ class AnalyzeReadAloudJob implements ShouldQueue
                 'confidence_score' => $analysis['confidence_score'] ?? 0,
                 'speech_rate' => $analysis['speech_rate'] ?? 0.00,
                 'long_pauses' => $analysis['long_pauses'] ?? 0,
+                'feedback' => $analysis['feedback'] ?? '',
+                'improvement_suggestions' => $analysis['improvement_suggestions'] ?? [],
             ]);
 
             $this->audioRecording->update(['status' => 'completed']);

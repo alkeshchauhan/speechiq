@@ -28,6 +28,7 @@ class UpdateSettingsRequest extends FormRequest
             'ENABLE_READ_ALOUD' => 'nullable|in:1,0,on,off,true,false',
             'ENABLE_TTS' => 'nullable|in:1,0,on,off,true,false',
             'ENABLE_STT' => 'nullable|in:1,0,on,off,true,false',
+            'ENABLE_REPORTS' => 'nullable|in:1,0,on,off,true,false',
         ];
     }
 }

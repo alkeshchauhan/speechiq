@@ -38,6 +38,15 @@ class AnalysisReportService extends BaseService
         $confidenceScores = [];
         $pronunciationScores = [];
         $fluencyScores = [];
+        $accuracyScores = [];
+        $communicationScores = [];
+        $wpms = [];
+        $pauseCounts = [];
+        $pauseDurations = [];
+        
+        $languages = [];
+        $accents = [];
+        $tones = [];
 
         $progressTimeline = [];
 
@@ -50,6 +59,13 @@ class AnalysisReportService extends BaseService
                 $readAloudScores[] = $res->overall_score;
                 $pronunciationScores[] = $res->pronunciation_score;
                 $fluencyScores[] = $res->fluency_score;
+                $accuracyScores[] = $res->accuracy_score;
+                $confidenceScores[] = $res->confidence_score ?? 0;
+                $wpms[] = $res->wpm ?? 0;
+                $pauseCounts[] = $res->pause_count ?? 0;
+                $pauseDurations[] = $res->pause_duration ?? 0.0;
+                if ($res->language) $languages[] = $res->language;
+                if ($res->accent) $accents[] = $res->accent;
 
                 $progressTimeline[] = [
                     'date' => $dateFormatted,
@@ -70,6 +86,13 @@ class AnalysisReportService extends BaseService
                 $confidenceScores[] = $res->confidence_score;
                 $pronunciationScores[] = $res->pronunciation_score;
                 $fluencyScores[] = $res->fluency_score;
+                $communicationScores[] = $res->communication_score ?? 0;
+                $wpms[] = $res->wpm ?? 0;
+                $pauseCounts[] = $res->pause_count ?? 0;
+                $pauseDurations[] = $res->pause_duration ?? 0.0;
+                if ($res->language) $languages[] = $res->language;
+                if ($res->accent) $accents[] = $res->accent;
+                if ($res->tone) $tones[] = $res->tone;
 
                 $progressTimeline[] = [
                     'date' => $dateFormatted,
@@ -89,6 +112,22 @@ class AnalysisReportService extends BaseService
         $readAloudAvg = count($readAloudScores) > 0 ? (int) round(array_sum($readAloudScores) / count($readAloudScores)) : 0;
         $interviewAvg = count($interviewScores) > 0 ? (int) round(array_sum($interviewScores) / count($interviewScores)) : 0;
         
+        $grammarAvg = count($grammarScores) > 0 ? (int) round(array_sum($grammarScores) / count($grammarScores)) : 0;
+        $vocabularyAvg = count($vocabularyScores) > 0 ? (int) round(array_sum($vocabularyScores) / count($vocabularyScores)) : 0;
+        $contentAvg = count($contentScores) > 0 ? (int) round(array_sum($contentScores) / count($contentScores)) : 0;
+        $confidenceAvg = count($confidenceScores) > 0 ? (int) round(array_sum($confidenceScores) / count($confidenceScores)) : 0;
+        $pronunciationAvg = count($pronunciationScores) > 0 ? (int) round(array_sum($pronunciationScores) / count($pronunciationScores)) : 0;
+        $fluencyAvg = count($fluencyScores) > 0 ? (int) round(array_sum($fluencyScores) / count($fluencyScores)) : 0;
+        $accuracyAvg = count($accuracyScores) > 0 ? (int) round(array_sum($accuracyScores) / count($accuracyScores)) : 0;
+        $communicationAvg = count($communicationScores) > 0 ? (int) round(array_sum($communicationScores) / count($communicationScores)) : 0;
+        $wpmAvg = count($wpms) > 0 ? (int) round(array_sum($wpms) / count($wpms)) : 0;
+        $pauseCountAvg = count($pauseCounts) > 0 ? (int) round(array_sum($pauseCounts) / count($pauseCounts)) : 0;
+        $pauseDurationAvg = count($pauseDurations) > 0 ? round(array_sum($pauseDurations) / count($pauseDurations), 2) : 0.00;
+
+        $primaryLanguage = count($languages) > 0 ? array_keys(array_count_values($languages))[0] : 'English';
+        $primaryAccent = count($accents) > 0 ? array_keys(array_count_values($accents))[0] : 'Standard Accent';
+        $primaryTone = count($tones) > 0 ? array_keys(array_count_values($tones))[0] : 'Professional';
+
         $totalTests = count($readAloudScores) + count($interviewScores);
 
         // Overall performance score is the average of category scores
@@ -208,9 +247,23 @@ class AnalysisReportService extends BaseService
                 'read_aloud_average' => $readAloudAvg,
                 'interview_average' => $interviewAvg,
                 'total_tests_taken' => $totalTests,
+                'primary_language' => $primaryLanguage,
+                'primary_accent' => $primaryAccent,
+                'primary_tone' => $primaryTone,
+                'confidence_average' => $confidenceAvg,
+                'pronunciation_average' => $pronunciationAvg,
+                'fluency_average' => $fluencyAvg,
+                'accuracy_average' => $accuracyAvg,
+                'grammar_average' => $grammarAvg,
+                'vocabulary_average' => $vocabularyAvg,
+                'content_average' => $contentAvg,
+                'communication_average' => $communicationAvg,
+                'wpm_average' => $wpmAvg,
+                'pause_count_average' => $pauseCountAvg,
+                'pause_duration_average' => $pauseDurationAvg,
                 'progress_data' => $progressTimeline,
                 'improvement_areas' => $improvementAreas,
-                'pdf_path' => null // Generated on demand or print view print-to-file
+                'pdf_path' => null
             ]
         );
 

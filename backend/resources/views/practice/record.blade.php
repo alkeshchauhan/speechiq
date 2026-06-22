@@ -104,287 +104,291 @@
         let mediaStream = null;
         let animationFrameId = null;
 
-        const canvas = document.getElementById('waveform-canvas');
-        const ctx = canvas.getContext('2d');
+        let $canvas, canvas, ctx;
+        let $btnStart, $btnStop, $btnReset, $btnUpload;
+        let $timerText, $timerDot, $overlayText, $responseConsole, $responseText;
+        let $playerContainer, $audioPlayer, audioPlayer, $btnPlayPause, $iconPlay, $iconPause, $seeker, $durationText;
 
-        // Elements
-        const btnStart = document.getElementById('btn-start');
-        const btnStop = document.getElementById('btn-stop');
-        const btnReset = document.getElementById('btn-reset');
-        const btnUpload = document.getElementById('btn-upload');
-        const timerText = document.getElementById('timer-text');
-        const timerDot = document.getElementById('timer-dot');
-        const overlayText = document.getElementById('recorder-overlay-text');
-        const responseConsole = document.getElementById('response-console');
-        const responseText = document.getElementById('response-text');
+        $(function() {
+            $canvas = $('#waveform-canvas');
+            canvas = $canvas[0];
+            ctx = canvas.getContext('2d');
 
-        // Playback Elements
-        const playerContainer = document.getElementById('audio-playback-container');
-        const audioPlayer = document.getElementById('audio-player');
-        const btnPlayPause = document.getElementById('btn-play-pause');
-        const iconPlay = document.getElementById('icon-play');
-        const iconPause = document.getElementById('icon-pause');
-        const seeker = document.getElementById('audio-seeker');
-        const durationText = document.getElementById('audio-duration-text');
+            // Elements
+            $btnStart = $('#btn-start');
+            $btnStop = $('#btn-stop');
+            $btnReset = $('#btn-reset');
+            $btnUpload = $('#btn-upload');
+            $timerText = $('#timer-text');
+            $timerDot = $('#timer-dot');
+            $overlayText = $('#recorder-overlay-text');
+            $responseConsole = $('#response-console');
+            $responseText = $('#response-text');
 
-        // Initialize Canvas size
-        function resizeCanvas() {
-            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+            // Playback Elements
+            $playerContainer = $('#audio-playback-container');
+            $audioPlayer = $('#audio-player');
+            audioPlayer = $audioPlayer[0];
+            $btnPlayPause = $('#btn-play-pause');
+            $iconPlay = $('#icon-play');
+            $iconPause = $('#icon-pause');
+            $seeker = $('#audio-seeker');
+            $durationText = $('#audio-duration-text');
 
-        // Draw initial static wave
-        function drawStaticWave() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#312e81'; // Deep Indigo
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height / 2 / window.devicePixelRatio);
-            ctx.lineTo(canvas.width / window.devicePixelRatio, canvas.height / 2 / window.devicePixelRatio);
-            ctx.stroke();
-        }
-        drawStaticWave();
-
-        // Start Recording Trigger
-        btnStart.addEventListener('click', async () => {
-            audioChunks = [];
-            
-            try {
-                // Request microphone access
-                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
-                // Initialize MediaRecorder
-                mediaRecorder = new MediaRecorder(mediaStream);
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    audioPlayer.src = audioUrl;
-
-                    // Enable upload and reset buttons
-                    btnUpload.disabled = false;
-                    btnReset.disabled = false;
-
-                    // Show custom player
-                    playerContainer.classList.remove('hidden');
-                };
-
-                // Initialize Web Audio API Analyser
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaStreamSource(mediaStream);
-                analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 256;
-                source.connect(analyser);
-
-                // Start recording
-                mediaRecorder.start();
-                
-                // UI Updates
-                btnStart.disabled = true;
-                btnStart.classList.add('opacity-50');
-                btnStop.disabled = false;
-                btnReset.disabled = true;
-                btnUpload.disabled = true;
-                playerContainer.classList.add('hidden');
-                responseConsole.classList.add('hidden');
-                
-                overlayText.innerText = 'Recording Voice...';
-                overlayText.classList.remove('text-slate-500');
-                overlayText.classList.add('text-indigo-400');
-                timerDot.classList.remove('bg-slate-700');
-                timerDot.classList.add('bg-rose-500', 'animate-ping');
-
-                // Start stopwatch
-                startTime = Date.now();
-                recordingDuration = 0;
-                timerInterval = setInterval(() => {
-                    const elapsed = Date.now() - startTime;
-                    recordingDuration = elapsed / 1000;
-                    
-                    const minutes = Math.floor(elapsed / 60000);
-                    const seconds = Math.floor((elapsed % 60000) / 1000);
-                    const tenths = Math.floor((elapsed % 1000) / 100);
-                    
-                    timerText.innerText = 
-                        (minutes < 10 ? '0' : '') + minutes + ':' +
-                        (seconds < 10 ? '0' : '') + seconds + '.' + tenths;
-                }, 100);
-
-                // Start visualizer animation
-                drawLiveWaveform();
-
-            } catch (err) {
-                console.error('Microphone access denied or error: ', err);
-                alert('Microphone permission is required to record voice.');
-            }
-        });
-
-        // Draw dynamic live waveform
-        function drawLiveWaveform() {
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
-
-            const draw = () => {
-                animationFrameId = requestAnimationFrame(draw);
-                analyser.getByteFrequencyData(dataArray);
-
-                const width = canvas.width / window.devicePixelRatio;
-                const height = canvas.height / window.devicePixelRatio;
-
-                ctx.fillStyle = '#0f172a'; // Slate 900
-                ctx.fillRect(0, 0, width, height);
-
-                const barWidth = (width / bufferLength) * 1.5;
-                let barHeight;
-                let x = 0;
-
-                for (let i = 0; i < bufferLength; i++) {
-                    barHeight = dataArray[i] / 2;
-
-                    // Build sleek blue/cyan gradient bar
-                    ctx.fillStyle = `rgb(${80 + barHeight}, ${99 - barHeight/2}, 245)`;
-                    
-                    // Draw centered bars
-                    ctx.fillRect(x, (height - barHeight) / 2, barWidth - 2, barHeight);
-                    x += barWidth;
-                }
-            };
-            draw();
-        }
-
-        // Stop Recording Trigger
-        btnStop.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-            }
-
-            // Stop mic stream
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-            }
-
-            // Clear timers
-            clearInterval(timerInterval);
-            cancelAnimationFrame(animationFrameId);
-
-            // UI cleanup
-            btnStart.disabled = false;
-            btnStart.classList.remove('opacity-50');
-            btnStop.disabled = true;
-            btnReset.disabled = false;
-
-            overlayText.innerText = 'Recording Complete';
-            overlayText.className = 'absolute text-indigo-400 text-xs font-semibold uppercase tracking-widest pointer-events-none';
-            timerDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
-            
-            drawStaticWave();
-        });
-
-        // Reset Recorder
-        btnReset.addEventListener('click', () => {
-            audioChunks = [];
-            audioBlob = null;
-            recordingDuration = 0;
-
-            audioPlayer.src = '';
-            timerText.innerText = '00:00.0';
-            timerDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-700';
-            overlayText.innerText = 'Microphone Inactive';
-            overlayText.className = 'absolute text-slate-500 text-xs font-semibold uppercase tracking-widest pointer-events-none';
-
-            btnUpload.disabled = true;
-            btnReset.disabled = true;
-            playerContainer.classList.add('hidden');
-            responseConsole.classList.add('hidden');
-
-            drawStaticWave();
-        });
-
-        // Custom Player Controls
-        btnPlayPause.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                audioPlayer.play();
-                iconPlay.classList.add('hidden');
-                iconPause.classList.remove('hidden');
-            } else {
-                audioPlayer.pause();
-                iconPlay.classList.remove('hidden');
-                iconPause.classList.add('hidden');
-            }
-        });
-
-        audioPlayer.addEventListener('timeupdate', () => {
-            const pct = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            seeker.value = pct || 0;
-            
-            const mins = Math.floor(audioPlayer.currentTime / 60);
-            const secs = Math.floor(audioPlayer.currentTime % 60);
-            durationText.innerText = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
-        });
-
-        seeker.addEventListener('input', () => {
-            const time = (seeker.value / 100) * audioPlayer.duration;
-            audioPlayer.currentTime = time;
-        });
-
-        audioPlayer.addEventListener('ended', () => {
-            iconPlay.classList.remove('hidden');
-            iconPause.classList.add('hidden');
-            seeker.value = 0;
-        });
-
-        // Upload recorded blob to Laravel backend
-        btnUpload.addEventListener('click', () => {
-            if (!audioBlob) return;
-
-            btnUpload.disabled = true;
-            btnUpload.innerText = 'Uploading...';
-
-            const formData = new FormData();
-            formData.append('audio_file', audioBlob, 'recording.webm');
-            formData.append('duration', recordingDuration);
-
-            fetch('{{ route("audio-recordings.store") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: formData
-            })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Upload failed with status ' + res.status);
-                }
-                return res.json();
-            })
-            .then(data => {
-                btnUpload.innerText = 'Upload Recording';
-                btnUpload.disabled = false;
-                
-                responseConsole.classList.remove('hidden');
-                if (data.success) {
-                    responseText.innerText = JSON.stringify(data.data, null, 4);
-                    responseText.className = 'text-xs font-mono text-emerald-400 whitespace-pre-wrap';
+            // Initialize Canvas size
+            function resizeCanvas() {
+                canvas.width = $canvas.outerWidth() * window.devicePixelRatio;
+                canvas.height = $canvas.outerHeight() * window.devicePixelRatio;
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Do nothing
                 } else {
-                    responseText.innerText = 'Error: ' + data.message;
-                    responseText.className = 'text-xs font-mono text-rose-400 whitespace-pre-wrap';
+                    drawStaticWave();
                 }
-            })
-            .catch(err => {
-                btnUpload.innerText = 'Upload Recording';
-                btnUpload.disabled = false;
+            }
+            $(window).on('resize', resizeCanvas);
+            resizeCanvas();
+
+            // Draw initial static wave
+            function drawStaticWave() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#312e81'; // Deep Indigo
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height / 2 / window.devicePixelRatio);
+                ctx.lineTo(canvas.width / window.devicePixelRatio, canvas.height / 2 / window.devicePixelRatio);
+                ctx.stroke();
+            }
+            drawStaticWave();
+
+            // Start Recording Trigger
+            $btnStart.on('click', async () => {
+                audioChunks = [];
                 
-                responseConsole.classList.remove('hidden');
-                responseText.innerText = 'Error: ' + err.message;
-                responseText.className = 'text-xs font-mono text-rose-450 whitespace-pre-wrap';
+                try {
+                    // Request microphone access
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    // Initialize MediaRecorder
+                    mediaRecorder = new MediaRecorder(mediaStream);
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        $audioPlayer.attr('src', audioUrl);
+
+                        // Enable upload and reset buttons
+                        $btnUpload.prop('disabled', false);
+                        $btnReset.prop('disabled', false);
+
+                        // Show custom player
+                        $playerContainer.removeClass('hidden');
+                    };
+
+                    // Initialize Web Audio API Analyser
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioCtx.createMediaStreamSource(mediaStream);
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 256;
+                    source.connect(analyser);
+
+                    // Start recording
+                    mediaRecorder.start();
+                    
+                    // UI Updates
+                    $btnStart.prop('disabled', true).addClass('opacity-50');
+                    $btnStop.prop('disabled', false);
+                    $btnReset.prop('disabled', true);
+                    $btnUpload.prop('disabled', true);
+                    $playerContainer.addClass('hidden');
+                    $responseConsole.addClass('hidden');
+                    
+                    $overlayText.text('Recording Voice...')
+                        .removeClass('text-slate-500')
+                        .addClass('text-indigo-400');
+                    $timerDot.removeClass('bg-slate-700')
+                        .addClass('bg-rose-500 animate-ping');
+
+                    // Start stopwatch
+                    startTime = Date.now();
+                    recordingDuration = 0;
+                    timerInterval = setInterval(() => {
+                        const elapsed = Date.now() - startTime;
+                        recordingDuration = elapsed / 1000;
+                        
+                        const minutes = Math.floor(elapsed / 60000);
+                        const seconds = Math.floor((elapsed % 60000) / 1000);
+                        const tenths = Math.floor((elapsed % 1000) / 100);
+                        
+                        $timerText.text(
+                            (minutes < 10 ? '0' : '') + minutes + ':' +
+                            (seconds < 10 ? '0' : '') + seconds + '.' + tenths
+                        );
+                    }, 100);
+
+                    // Start visualizer animation
+                    drawLiveWaveform();
+
+                } catch (err) {
+                    console.error('Microphone access denied or error: ', err);
+                    alert('Microphone permission is required to record voice.');
+                }
+            });
+
+            // Draw dynamic live waveform
+            function drawLiveWaveform() {
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                const draw = () => {
+                    animationFrameId = requestAnimationFrame(draw);
+                    analyser.getByteFrequencyData(dataArray);
+
+                    const width = canvas.width / window.devicePixelRatio;
+                    const height = canvas.height / window.devicePixelRatio;
+
+                    ctx.fillStyle = '#0f172a'; // Slate 900
+                    ctx.fillRect(0, 0, width, height);
+
+                    const barWidth = (width / bufferLength) * 1.5;
+                    let barHeight;
+                    let x = 0;
+
+                    for (let i = 0; i < bufferLength; i++) {
+                        barHeight = dataArray[i] / 2;
+
+                        // Build sleek blue/cyan gradient bar
+                        ctx.fillStyle = `rgb(${80 + barHeight}, ${99 - barHeight/2}, 245)`;
+                        
+                        // Draw centered bars
+                        ctx.fillRect(x, (height - barHeight) / 2, barWidth - 2, barHeight);
+                        x += barWidth;
+                    }
+                };
+                draw();
+            }
+
+            // Stop Recording Trigger
+            $btnStop.on('click', () => {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+
+                // Stop mic stream
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                }
+
+                // Clear timers
+                clearInterval(timerInterval);
+                cancelAnimationFrame(animationFrameId);
+
+                // UI cleanup
+                $btnStart.prop('disabled', false).removeClass('opacity-50');
+                $btnStop.prop('disabled', true);
+                $btnReset.prop('disabled', false);
+
+                $overlayText.text('Recording Complete')
+                    .attr('class', 'absolute text-indigo-400 text-xs font-semibold uppercase tracking-widest pointer-events-none');
+                $timerDot.attr('class', 'w-2.5 h-2.5 rounded-full bg-emerald-500');
+                
+                drawStaticWave();
+            });
+
+            // Reset Recorder
+            $btnReset.on('click', () => {
+                audioChunks = [];
+                audioBlob = null;
+                recordingDuration = 0;
+
+                $audioPlayer.attr('src', '');
+                $timerText.text('00:00.0');
+                $timerDot.attr('class', 'w-2.5 h-2.5 rounded-full bg-slate-700');
+                $overlayText.text('Microphone Inactive')
+                    .attr('class', 'absolute text-slate-500 text-xs font-semibold uppercase tracking-widest pointer-events-none');
+
+                $btnUpload.prop('disabled', true);
+                $btnReset.prop('disabled', true);
+                $playerContainer.addClass('hidden');
+                $responseConsole.addClass('hidden');
+
+                drawStaticWave();
+            });
+
+            // Custom Player Controls
+            $btnPlayPause.on('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    $iconPlay.addClass('hidden');
+                    $iconPause.removeClass('hidden');
+                } else {
+                    audioPlayer.pause();
+                    $iconPlay.removeClass('hidden');
+                    $iconPause.addClass('hidden');
+                }
+            });
+
+            $audioPlayer.on('timeupdate', () => {
+                const pct = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                $seeker.val(pct || 0);
+                
+                const mins = Math.floor(audioPlayer.currentTime / 60);
+                const secs = Math.floor(audioPlayer.currentTime % 60);
+                $durationText.text((mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs);
+            });
+
+            $seeker.on('input', () => {
+                const time = ($seeker.val() / 100) * audioPlayer.duration;
+                audioPlayer.currentTime = time;
+            });
+
+            $audioPlayer.on('ended', () => {
+                $iconPlay.removeClass('hidden');
+                $iconPause.addClass('hidden');
+                $seeker.val(0);
+            });
+
+            // Upload recorded blob to Laravel backend using jQuery AJAX
+            $btnUpload.on('click', () => {
+                if (!audioBlob) return;
+
+                $btnUpload.prop('disabled', true).text('Uploading...');
+
+                const formData = new FormData();
+                formData.append('audio_file', audioBlob, 'recording.webm');
+                formData.append('duration', recordingDuration);
+
+                $.ajax({
+                    url: '{{ route("audio-recordings.store") }}',
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        $btnUpload.text('Upload Recording').prop('disabled', false);
+                        $responseConsole.removeClass('hidden');
+                        if (data.success) {
+                            $responseText.text(JSON.stringify(data.data, null, 4))
+                                .attr('class', 'text-xs font-mono text-emerald-400 whitespace-pre-wrap');
+                        } else {
+                            $responseText.text('Error: ' + data.message)
+                                .attr('class', 'text-xs font-mono text-rose-400 whitespace-pre-wrap');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $btnUpload.text('Upload Recording').prop('disabled', false);
+                        $responseConsole.removeClass('hidden');
+                        $responseText.text('Error: ' + error)
+                            .attr('class', 'text-xs font-mono text-rose-450 whitespace-pre-wrap');
+                    }
+                });
             });
         });
-
     </script>
 </x-user-layout>

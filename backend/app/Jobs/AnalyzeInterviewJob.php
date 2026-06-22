@@ -47,6 +47,7 @@ class AnalyzeInterviewJob implements ShouldQueue
                 'audio_recording_id' => $this->audioRecording->id,
                 'question' => $this->questionText,
                 'transcript' => $analysis['transcript'] ?? '',
+                'language' => $analysis['language'] ?? '',
                 'grammar_score' => $analysis['grammar_score'] ?? 0,
                 'vocabulary_score' => $analysis['vocabulary_score'] ?? 0,
                 'content_score' => $analysis['content_score'] ?? 0,
@@ -57,12 +58,18 @@ class AnalyzeInterviewJob implements ShouldQueue
                 'accent' => $analysis['accent'] ?? '',
                 'overall_score' => $analysis['overall_score'] ?? 0,
                 'feedback' => $analysis['feedback'] ?? '',
+                'improvement_suggestions' => $analysis['improvement_suggestions'] ?? [],
                 'tone' => $analysis['tone'] ?? 'Professional',
                 'wpm' => $analysis['wpm'] ?? 0,
+                'pause_count' => $analysis['pause_count'] ?? 0,
+                'pause_duration' => $analysis['pause_duration'] ?? 0,
             ]);
 
             $this->audioRecording->update(['status' => 'completed']);
-            \App\Jobs\GenerateReportJob::dispatch($this->audioRecording->user_id);
+
+            $overallScore = (int) ($analysis['overall_score'] ?? 0);
+            $resultsUrl   = route('practice.interview.results-view', $this->audioRecording->id);
+            \App\Jobs\GenerateReportJob::dispatch($this->audioRecording->user_id, 'AI Interview', $overallScore, $resultsUrl);
 
         } catch (\Exception $e) {
             Log::error("AnalyzeInterviewJob failed for Recording ID {$this->audioRecording->id}: " . $e->getMessage());

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 class SettingService extends BaseService
 {
     protected SettingRepositoryInterface $settingRepository;
-    
+
     // Memory cache for runtime optimization
     protected static array $settingsCache = [];
 
@@ -43,7 +43,7 @@ class SettingService extends BaseService
     public function set(string $key, mixed $value, string $type = 'text', bool $isEncrypted = false): void
     {
         $this->settingRepository->set($key, $value, $type, $isEncrypted);
-        
+
         // Clear caches
         Cache::forget('setting_' . $key);
         if (array_key_exists($key, self::$settingsCache)) {
@@ -61,17 +61,17 @@ class SettingService extends BaseService
             if ($settingModel) {
                 $type = $settingModel->setting_type;
                 $isEncrypted = $settingModel->is_encrypted;
-                
+
                 // For password setting types, don't overwrite if it's masked or empty
                 if ($type === 'password' && ($value === '********' || empty($value))) {
                     continue;
                 }
-                
+
                 // Cast boolean to '1' or '0' string representation for db text field
                 if ($type === 'boolean') {
                     $value = $value ? '1' : '0';
                 }
-                
+
                 $this->set($key, $value, $type, $isEncrypted);
             }
         }
@@ -80,16 +80,21 @@ class SettingService extends BaseService
     /**
      * Test connection to APIs.
      */
-    public function testConnection(string $target): array
+    public function testConnection(string $target, array $overrides = []): array
     {
         if ($target === 'gemini') {
-            $apiKey = $this->get('GEMINI_API_KEY');
+            $apiKey = $overrides['GEMINI_API_KEY'] ?? null;
+            $model = $overrides['GEMINI_MODEL'] ?? $this->get('GEMINI_MODEL', 'gemini-2.5-flash');
+
+            if ($apiKey === '********' || $apiKey === null) {
+                $apiKey = $this->get('GEMINI_API_KEY');
+            }
+
             if (empty($apiKey)) {
-                return ['success' => false, 'message' => 'Gemini API Key is empty.'];
+                return ['success' => false, 'message' => 'Gemini API Key is empty. Enter a valid key to test.'];
             }
 
             try {
-                $model = $this->get('GEMINI_MODEL', 'gemini-1.5-flash');
                 $response = Http::withoutVerifying()
                     ->post("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}", [
                         'contents' => [
@@ -113,8 +118,15 @@ class SettingService extends BaseService
         }
 
         if ($target === 'fastapi') {
-            $apiUrl = $this->get('AI_API_URL');
-            $apiToken = $this->get('AI_API_TOKEN');
+            $apiUrl = $overrides['AI_API_URL'] ?? null;
+            $apiToken = $overrides['AI_API_TOKEN'] ?? null;
+
+            if ($apiUrl === null) {
+                $apiUrl = $this->get('AI_API_URL');
+            }
+            if ($apiToken === '********' || $apiToken === null) {
+                $apiToken = $this->get('AI_API_TOKEN');
+            }
 
             if (empty($apiUrl)) {
                 return ['success' => false, 'message' => 'AI Engine API URL is empty.'];

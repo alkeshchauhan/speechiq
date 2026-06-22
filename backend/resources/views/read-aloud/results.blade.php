@@ -179,6 +179,42 @@
             </div>
         </div>
 
+        <!-- Transcript & Language -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-850 pb-3">
+                    <span class="p-1.5 bg-slate-900 rounded-lg text-indigo-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </span>
+                    <h3 class="font-bold text-white">Expected Paragraph</h3>
+                </div>
+                <p class="text-sm text-slate-350 leading-relaxed font-medium">{{ $question->question_text }}</p>
+            </div>
+
+            <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-850 pb-3">
+                    <span class="p-1.5 bg-slate-900 rounded-lg text-cyan-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                        </svg>
+                    </span>
+                    <h3 class="font-bold text-white">Your Transcript</h3>
+                </div>
+                <p class="text-sm text-slate-300 leading-relaxed italic">
+                    "{{ $result->transcript ?: 'No transcript processed.' }}"
+                </p>
+                @if($result->language)
+                    <div class="pt-2">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 text-slate-300 border border-slate-800">
+                            Language: {{ $result->language }}
+                        </span>
+                    </div>
+                @endif
+            </div>
+        </div>
+
         <!-- Word Highlight Panel -->
         <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
             <div class="border-b border-slate-850 pb-4">
@@ -227,6 +263,50 @@
                     <p class="text-xs text-slate-500 leading-tight">These are additional vocalized filler words detected in your audio that were not present in the script.</p>
                 </div>
             @endif
+        </div>
+
+        <!-- AI Feedback & Improvement Suggestions -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-850 pb-3">
+                    <span class="p-1.5 bg-slate-900 rounded-lg text-emerald-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707 .707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 113.536 0V21h2v-2.236a5 5 0 013.536 0z"></path>
+                        </svg>
+                    </span>
+                    <h3 class="font-bold text-white">Speaking Review</h3>
+                </div>
+                <div class="text-sm text-slate-300 leading-relaxed">
+                    @if($result->feedback)
+                        <p class="whitespace-pre-line">{{ $result->feedback }}</p>
+                    @else
+                        <p class="text-slate-500">Feedback will appear here after AI analysis completes.</p>
+                    @endif
+                </div>
+            </div>
+
+            <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-850 pb-3">
+                    <span class="p-1.5 bg-slate-900 rounded-lg text-amber-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </span>
+                    <h3 class="font-bold text-white">Improvement Suggestions</h3>
+                </div>
+                @if(!empty($result->improvement_suggestions))
+                    <ul class="space-y-3">
+                        @foreach($result->improvement_suggestions as $suggestion)
+                            <li class="flex items-start gap-3 text-sm text-slate-300">
+                                <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                                <span>{{ $suggestion }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-sm text-slate-500">Suggestions will appear here based on your reading performance.</p>
+                @endif
+            </div>
         </div>
 
     </div>

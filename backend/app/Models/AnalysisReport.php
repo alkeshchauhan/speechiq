@@ -13,6 +13,20 @@ class AnalysisReport extends Model
         'read_aloud_average',
         'interview_average',
         'total_tests_taken',
+        'primary_language',
+        'primary_accent',
+        'primary_tone',
+        'confidence_average',
+        'pronunciation_average',
+        'fluency_average',
+        'accuracy_average',
+        'grammar_average',
+        'vocabulary_average',
+        'content_average',
+        'communication_average',
+        'wpm_average',
+        'pause_count_average',
+        'pause_duration_average',
         'progress_data',
         'improvement_areas',
         'pdf_path',
@@ -21,6 +35,7 @@ class AnalysisReport extends Model
     protected $casts = [
         'progress_data' => 'array',
         'improvement_areas' => 'array',
+        'pause_duration_average' => 'float',
     ];
 
     /**

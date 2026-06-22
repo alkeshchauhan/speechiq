@@ -111,6 +111,17 @@
                         </div>
                     </div>
 
+                    <!-- Communication Score -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="font-semibold text-slate-350">Communication Skills</span>
+                            <span class="font-bold text-violet-400">{{ $result->communication_score }}%</span>
+                        </div>
+                        <div class="h-2 w-full bg-slate-850 rounded-full overflow-hidden">
+                            <div class="h-full bg-violet-500 rounded-full" style="width: {{ $result->communication_score }}%"></div>
+                        </div>
+                    </div>
+
                     <!-- Confidence -->
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-sm">
@@ -152,6 +163,40 @@
                         <source src="{{ asset('storage/' . $recording->audio_path) }}" type="audio/webm">
                         Your browser does not support the audio element.
                     </audio>
+                </div>
+            </div>
+        </div>
+
+        <!-- Speech Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 space-y-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Speaking Speed</span>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl font-extrabold text-white">{{ $result->wpm }}</span>
+                    <span class="text-sm font-semibold text-slate-400">WPM</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 space-y-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Pauses</span>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl font-extrabold text-white">{{ $result->pause_count ?? 0 }}</span>
+                    <span class="text-sm font-semibold text-slate-400">times</span>
+                </div>
+                <p class="text-xs text-slate-500">Total pause duration: <span class="text-white font-semibold">{{ $result->pause_duration ?? 0 }}s</span></p>
+            </div>
+
+            <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 space-y-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Tone</span>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-2xl font-extrabold text-white">{{ $result->tone ?: 'N/A' }}</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/40 border border-slate-800 rounded-2xl p-6 space-y-2">
+                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Language</span>
+                <div class="flex items-baseline gap-1.5">
+                    <span class="text-2xl font-extrabold text-white">{{ $result->language ?: 'English' }}</span>
                 </div>
             </div>
         </div>
@@ -203,10 +248,31 @@
                 @if($result->feedback)
                     <p class="whitespace-pre-line">{{ $result->feedback }}</p>
                 @else
-                    <p>Good response structure. Work on pacing and pronunciation of technical vocabulary to improve overall assessment rating.</p>
+                    <p class="text-slate-500">Feedback will appear here after AI analysis completes.</p>
                 @endif
             </div>
         </div>
+
+        @if(!empty($result->improvement_suggestions))
+            <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
+                <div class="flex items-center gap-2 border-b border-slate-855 pb-3">
+                    <span class="p-1.5 bg-slate-900 rounded-lg text-amber-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </span>
+                    <h3 class="font-bold text-white">Improvement Suggestions</h3>
+                </div>
+                <ul class="space-y-3">
+                    @foreach($result->improvement_suggestions as $suggestion)
+                        <li class="flex items-start gap-3 text-sm text-slate-300">
+                            <span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>
+                            <span>{{ $suggestion }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
     </div>
 </x-user-layout>

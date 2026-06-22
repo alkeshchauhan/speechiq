@@ -90,7 +90,7 @@
                             <div class="space-y-1">
                                 <div class="flex justify-between text-xs text-slate-300">
                                     <span>Read Aloud</span>
-                                    <span class="font-bold text-white">{{ $report->read_aloud_average }}%</span>
+                                    <span class="font-bold text-white">{{ number_format($report->read_aloud_average, 2) }}%</span>
                                 </div>
                                 <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
                                     <div class="bg-cyan-500 h-full rounded-full" style="width: {{ $report->read_aloud_average }}%;"></div>
@@ -100,7 +100,7 @@
                             <div class="space-y-1">
                                 <div class="flex justify-between text-xs text-slate-300">
                                     <span>AI Interview</span>
-                                    <span class="font-bold text-white">{{ $report->interview_average }}%</span>
+                                    <span class="font-bold text-white">{{ number_format($report->interview_average, 2) }}%</span>
                                 </div>
                                 <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
                                     <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $report->interview_average }}%;"></div>
@@ -124,6 +124,133 @@
                         <!-- Chart container -->
                         <div class="relative h-64 w-full">
                             <canvas id="progress-timeline-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Unified Verbal Competency Index -->
+                    <div class="bg-slate-950/40 border border-slate-800 rounded-3xl p-6 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-850 pb-4">
+                            <h3 class="text-md font-bold text-white flex items-center gap-2">
+                                <span class="w-1 h-4 bg-indigo-500 rounded-full"></span>
+                                Unified Verbal Competency Index (IELTS/PTE Averages)
+                            </h3>
+                            <span class="text-xs text-slate-500">Average metric scores</span>
+                        </div>
+
+                        <!-- Linguistic Details Row -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-900/35 border border-slate-850 rounded-2xl p-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Primary Language</span>
+                                <p class="text-sm font-semibold text-white">{{ $report->primary_language }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Accent Dialect</span>
+                                <p class="text-sm font-semibold text-white">{{ $report->primary_accent }}</p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Spoken Tone</span>
+                                <p class="text-sm font-semibold text-white">{{ $report->primary_tone }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Scores Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <!-- Grammar -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Grammar</span>
+                                    <span class="text-white">{{ number_format($report->grammar_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $report->grammar_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Vocabulary -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Vocabulary</span>
+                                    <span class="text-white">{{ number_format($report->vocabulary_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $report->vocabulary_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Accuracy -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Accuracy</span>
+                                    <span class="text-white">{{ number_format($report->accuracy_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-cyan-500 h-full rounded-full" style="width: {{ $report->accuracy_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Content Relevancy -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Content Relevancy</span>
+                                    <span class="text-white">{{ number_format($report->content_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-cyan-500 h-full rounded-full" style="width: {{ $report->content_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Confidence -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Confidence</span>
+                                    <span class="text-white">{{ number_format($report->confidence_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $report->confidence_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Pronunciation -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Pronunciation</span>
+                                    <span class="text-white">{{ number_format($report->pronunciation_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-indigo-500 h-full rounded-full" style="width: {{ $report->pronunciation_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Fluency -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Fluency</span>
+                                    <span class="text-white">{{ number_format($report->fluency_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-cyan-500 h-full rounded-full" style="width: {{ $report->fluency_average }}%;"></div>
+                                </div>
+                            </div>
+                            <!-- Communication -->
+                            <div class="space-y-1.5 p-3 rounded-xl bg-slate-900/20 border border-slate-850/80">
+                                <div class="flex justify-between text-xs font-semibold text-slate-400">
+                                    <span>Communication</span>
+                                    <span class="text-white">{{ number_format($report->communication_average, 2) }}%</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-slate-900 border border-slate-800 rounded-full overflow-hidden">
+                                    <div class="bg-cyan-500 h-full rounded-full" style="width: {{ $report->communication_average }}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timing and pause stats -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-slate-850 pt-4">
+                            <div class="flex justify-between text-xs p-2 bg-slate-900/10 border border-slate-850/50 rounded-lg">
+                                <span class="font-semibold text-slate-400">Speech Rate:</span>
+                                <span class="font-bold text-white font-mono">{{ number_format($report->wpm_average, 2) }} WPM</span>
+                            </div>
+                            <div class="flex justify-between text-xs p-2 bg-slate-900/10 border border-slate-850/50 rounded-lg">
+                                <span class="font-semibold text-slate-400">Average Pause Count:</span>
+                                <span class="font-bold text-white font-mono">{{ number_format($report->pause_count_average, 2) }} pauses</span>
+                            </div>
+                            <div class="flex justify-between text-xs p-2 bg-slate-900/10 border border-slate-850/50 rounded-lg">
+                                <span class="font-semibold text-slate-400">Average Pause Duration:</span>
+                                <span class="font-bold text-white font-mono">{{ number_format($report->pause_duration_average, 2) }} sec</span>
+                            </div>
                         </div>
                     </div>
 
@@ -184,8 +311,8 @@
     @if($report && count($report->progress_data ?? []) > 0)
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const ctx = document.getElementById('progress-timeline-chart').getContext('2d');
+            $(function() {
+                const ctx = $('#progress-timeline-chart')[0].getContext('2d');
                 
                 // Parse timeline parameters from PHP variable
                 const rawData = @json($report->progress_data);

@@ -269,52 +269,52 @@
         let mediaStream = null;
         let animationFrameId = null;
 
-        const canvas = document.getElementById('waveform-canvas');
+        const canvas = $('#waveform-canvas')[0];
         const ctx = canvas.getContext('2d');
 
         // Control Elements
-        const btnStart = document.getElementById('btn-start');
-        const btnStop = document.getElementById('btn-stop');
-        const btnReset = document.getElementById('btn-reset');
-        const btnUpload = document.getElementById('btn-upload');
-        const btnVocalize = document.getElementById('btn-vocalize');
+        const btnStart = $('#btn-start');
+        const btnStop = $('#btn-stop');
+        const btnReset = $('#btn-reset');
+        const btnUpload = $('#btn-upload');
+        const btnVocalize = $('#btn-vocalize');
         
-        const timerText = document.getElementById('timer-text');
-        const timerDot = document.getElementById('timer-dot');
-        const overlayText = document.getElementById('recorder-overlay-text');
+        const timerText = $('#timer-text');
+        const timerDot = $('#timer-dot');
+        const overlayText = $('#recorder-overlay-text');
         
-        const processingModal = document.getElementById('processing-modal');
-        const processingMsg = document.getElementById('processing-msg');
-        const chatTimeline = document.getElementById('chat-timeline');
+        const processingModal = $('#processing-modal');
+        const processingMsg = $('#processing-msg');
+        const chatTimeline = $('#chat-timeline');
         
-        const agentStatus = document.getElementById('agent-status');
-        const pulseRing = document.getElementById('avatar-pulse-ring');
+        const agentStatus = $('#agent-status');
+        const pulseRing = $('#avatar-pulse-ring');
         
         // Progress bar Elements
-        const progressBar = document.getElementById('session-progress');
-        const progressText = document.getElementById('session-progress-text');
+        const progressBar = $('#session-progress');
+        const progressText = $('#session-progress-text');
 
         // Metric Scorecard Elements
-        const cardDefault = document.getElementById('metrics-card-default');
-        const cardActive = document.getElementById('metrics-card-active');
-        const overallProgress = document.getElementById('metrics-overall-progress');
-        const overallScoreVal = document.getElementById('metrics-overall-score');
-        const overallText = document.getElementById('metrics-overall-text');
-        const accentText = document.getElementById('metrics-accent');
-        const suggestionsText = document.getElementById('metrics-suggestions');
+        const cardDefault = $('#metrics-card-default');
+        const cardActive = $('#metrics-card-active');
+        const overallProgress = $('#metrics-overall-progress');
+        const overallScoreVal = $('#metrics-overall-score');
+        const overallText = $('#metrics-overall-text');
+        const accentText = $('#metrics-accent');
+        const suggestionsText = $('#metrics-suggestions');
         
-        const scoreGrammar = document.getElementById('score-grammar');
-        const barGrammar = document.getElementById('bar-grammar');
-        const scoreVocabulary = document.getElementById('score-vocabulary');
-        const barVocabulary = document.getElementById('bar-vocabulary');
-        const scoreContent = document.getElementById('score-content');
-        const barContent = document.getElementById('bar-content');
-        const scoreConfidence = document.getElementById('score-confidence');
-        const barConfidence = document.getElementById('bar-confidence');
-        const scorePronunciation = document.getElementById('score-pronunciation');
-        const barPronunciation = document.getElementById('bar-pronunciation');
-        const scoreFluency = document.getElementById('score-fluency');
-        const barFluency = document.getElementById('bar-fluency');
+        const scoreGrammar = $('#score-grammar');
+        const barGrammar = $('#bar-grammar');
+        const scoreVocabulary = $('#score-vocabulary');
+        const barVocabulary = $('#bar-vocabulary');
+        const scoreContent = $('#score-content');
+        const barContent = $('#bar-content');
+        const scoreConfidence = $('#score-confidence');
+        const barConfidence = $('#bar-confidence');
+        const scorePronunciation = $('#score-pronunciation');
+        const barPronunciation = $('#bar-pronunciation');
+        const scoreFluency = $('#score-fluency');
+        const barFluency = $('#bar-fluency');
 
         // Conversation state tracker
         const interviewContext = "{{ $test->description }}";
@@ -329,7 +329,7 @@
             canvas.height = canvas.offsetHeight * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         }
-        window.addEventListener('resize', resizeCanvas);
+        $(window).on('resize', resizeCanvas);
         resizeCanvas();
 
         function drawStaticWave() {
@@ -349,9 +349,9 @@
         // TTS Speech Synthesis vocalizer using real gTTS backend
         async function speakActiveQuestion() {
             // Set speaking state
-            agentStatus.innerText = "Speaking";
-            agentStatus.className = "text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 font-semibold uppercase tracking-wider animate-pulse";
-            pulseRing.classList.remove('hidden');
+            agentStatus.text("Speaking");
+            agentStatus.attr('class', "text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 font-semibold uppercase tracking-wider animate-pulse");
+            pulseRing.removeClass('hidden');
 
             // Extract clean question text
             let speakText = activeQuestionText;
@@ -362,29 +362,28 @@
 
             try {
                 // Call Laravel TTS endpoint → which calls FastAPI → gTTS
-                const response = await fetch('{{ route("practice.tts") }}', {
+                const data = await $.ajax({
+                    url: '{{ route("practice.tts") }}',
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ text: speakText })
+                    data: JSON.stringify({ text: speakText })
                 });
-
-                const data = await response.json();
 
                 if (data.success && data.audio_data) {
                     // Play the real gTTS audio (base64 data URI)
                     ttsAudio.src = data.audio_data;
                     ttsAudio.onended = () => {
-                        agentStatus.innerText = "Listening";
-                        agentStatus.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider";
-                        pulseRing.classList.add('hidden');
+                        agentStatus.text("Listening");
+                        agentStatus.attr('class', "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider");
+                        pulseRing.addClass('hidden');
                     };
                     ttsAudio.onerror = () => {
-                        agentStatus.innerText = "Listening";
-                        agentStatus.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider";
-                        pulseRing.classList.add('hidden');
+                        agentStatus.text("Listening");
+                        agentStatus.attr('class', "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider");
+                        pulseRing.addClass('hidden');
                     };
                     ttsAudio.play();
                     return;
@@ -399,25 +398,25 @@
                 const utterance = new SpeechSynthesisUtterance(speakText);
                 utterance.lang = 'en-US';
                 utterance.onend = () => {
-                    agentStatus.innerText = "Listening";
-                    agentStatus.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider";
-                    pulseRing.classList.add('hidden');
+                    agentStatus.text("Listening");
+                    agentStatus.attr('class', "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider");
+                    pulseRing.addClass('hidden');
                 };
                 window.speechSynthesis.speak(utterance);
             } else {
-                agentStatus.innerText = "Listening";
-                agentStatus.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider";
-                pulseRing.classList.add('hidden');
+                agentStatus.text("Listening");
+                agentStatus.attr('class', "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-semibold uppercase tracking-wider");
+                pulseRing.addClass('hidden');
             }
         }
 
         // Initialize Speak on load
-        window.addEventListener('DOMContentLoaded', () => {
+        $(function() {
             appendQuestionBubble(activeQuestionText);
             speakActiveQuestion();
         });
 
-        btnVocalize.addEventListener('click', speakActiveQuestion);
+        btnVocalize.on('click', speakActiveQuestion);
 
         // Chat Timeline Helpers
         function appendQuestionBubble(text) {
@@ -426,51 +425,50 @@
                 cleanText = cleanText.split("Starting query: ")[1];
             }
 
-            const bubble = document.createElement('div');
-            bubble.className = "flex gap-4 items-start";
-            bubble.innerHTML = `
-                <div class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white text-xs font-bold font-mono shadow-md">
-                    AI
-                </div>
-                <div class="bg-indigo-950/30 border border-indigo-900/40 rounded-2xl rounded-tl-none p-4 max-w-xl text-slate-100 text-sm leading-relaxed font-medium">
-                    ${cleanText}
+            const bubbleHtml = `
+                <div class="flex gap-4 items-start">
+                    <div class="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white text-xs font-bold font-mono shadow-md">
+                        AI
+                    </div>
+                    <div class="bg-indigo-950/30 border border-indigo-900/40 rounded-2xl rounded-tl-none p-4 max-w-xl text-slate-100 text-sm leading-relaxed font-medium">
+                        ${cleanText}
+                    </div>
                 </div>
             `;
-            chatTimeline.appendChild(bubble);
-            chatTimeline.scrollTop = chatTimeline.scrollHeight;
+            chatTimeline.append(bubbleHtml);
+            chatTimeline.scrollTop(chatTimeline[0].scrollHeight);
         }
 
         function appendResponseBubble(recordingId) {
             const bubbleId = `bubble-user-${recordingId}`;
-            const bubble = document.createElement('div');
-            bubble.className = "flex gap-4 items-start justify-end";
-            bubble.innerHTML = `
-                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl rounded-tr-none p-4 max-w-xl text-slate-100 text-sm leading-relaxed space-y-3">
-                    <div id="transcript-text-${recordingId}" class="italic text-slate-400 flex items-center gap-2 text-xs">
-                        <svg class="w-3.5 h-3.5 animate-spin text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Transcribing & Analyzing answer...
+            const bubbleHtml = `
+                <div id="${bubbleId}" class="flex gap-4 items-start justify-end">
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl rounded-tr-none p-4 max-w-xl text-slate-100 text-sm leading-relaxed space-y-3">
+                        <div id="transcript-text-${recordingId}" class="italic text-slate-400 flex items-center gap-2 text-xs">
+                            <svg class="w-3.5 h-3.5 animate-spin text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Transcribing & Analyzing answer...
+                        </div>
+                        
+                        <div id="quick-feedback-${recordingId}" class="hidden flex items-center gap-3 pt-2 border-t border-slate-850">
+                            <span id="bubble-score-${recordingId}" class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-bold">Overall: 0%</span>
+                            <button type="button" onclick="showScorecard(${recordingId})" class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider hover:text-indigo-300">View Metrics</button>
+                        </div>
                     </div>
-                    
-                    <div id="quick-feedback-${recordingId}" class="hidden flex items-center gap-3 pt-2 border-t border-slate-850">
-                        <span id="bubble-score-${recordingId}" class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-bold">Overall: 0%</span>
-                        <button type="button" onclick="showScorecard(${recordingId})" class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider hover:text-indigo-300">View Metrics</button>
+                    <div class="w-10 h-10 shrink-0 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 text-xs font-bold shadow-md">
+                        ME
                     </div>
-                </div>
-                <div class="w-10 h-10 shrink-0 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 text-xs font-bold shadow-md">
-                    ME
                 </div>
             `;
-            bubble.id = bubbleId;
-            chatTimeline.appendChild(bubble);
-            chatTimeline.scrollTop = chatTimeline.scrollHeight;
+            chatTimeline.append(bubbleHtml);
+            chatTimeline.scrollTop(chatTimeline[0].scrollHeight);
             return bubbleId;
         }
 
         // Action: Start Recording
-        btnStart.addEventListener('click', async () => {
+        btnStart.on('click', async () => {
             audioChunks = [];
             
             try {
@@ -483,8 +481,8 @@
 
                 mediaRecorder.onstop = () => {
                     audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    btnUpload.disabled = false;
-                    btnReset.disabled = false;
+                    btnUpload.prop('disabled', false);
+                    btnReset.prop('disabled', false);
                 };
 
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -496,17 +494,17 @@
                 mediaRecorder.start();
                 
                 // UI updates
-                btnStart.disabled = true;
-                btnStart.classList.add('opacity-50');
-                btnStop.disabled = false;
-                btnReset.disabled = true;
-                btnUpload.disabled = true;
+                btnStart.prop('disabled', true);
+                btnStart.addClass('opacity-50');
+                btnStop.prop('disabled', false);
+                btnReset.prop('disabled', true);
+                btnUpload.prop('disabled', true);
                 
-                overlayText.innerText = 'Interviewer listening...';
-                overlayText.classList.remove('text-slate-500');
-                overlayText.classList.add('text-indigo-400');
-                timerDot.classList.remove('bg-slate-700');
-                timerDot.classList.add('bg-rose-500', 'animate-ping');
+                overlayText.text('Interviewer listening...');
+                overlayText.removeClass('text-slate-500');
+                overlayText.addClass('text-indigo-400');
+                timerDot.removeClass('bg-slate-700');
+                timerDot.addClass('bg-rose-500 animate-ping');
 
                 // Timer stopwatch
                 startTime = Date.now();
@@ -519,9 +517,10 @@
                     const seconds = Math.floor((elapsed % 60000) / 1000);
                     const tenths = Math.floor((elapsed % 1000) / 100);
                     
-                    timerText.innerText = 
+                    timerText.text(
                         (minutes < 10 ? '0' : '') + minutes + ':' +
-                        (seconds < 10 ? '0' : '') + seconds + '.' + tenths;
+                        (seconds < 10 ? '0' : '') + seconds + '.' + tenths
+                    );
                 }, 100);
 
                 drawLiveWaveform();
@@ -562,7 +561,7 @@
         }
 
         // Action: Stop Recording
-        btnStop.addEventListener('click', () => {
+        btnStop.on('click', () => {
             if (mediaRecorder && mediaRecorder.state !== 'inactive') {
                 mediaRecorder.stop();
             }
@@ -574,31 +573,31 @@
             clearInterval(timerInterval);
             cancelAnimationFrame(animationFrameId);
 
-            btnStart.disabled = false;
-            btnStart.classList.remove('opacity-50');
-            btnStop.disabled = true;
-            btnReset.disabled = false;
+            btnStart.prop('disabled', false);
+            btnStart.removeClass('opacity-50');
+            btnStop.prop('disabled', true);
+            btnReset.prop('disabled', false);
 
-            overlayText.innerText = 'Answer Completed';
-            overlayText.className = 'absolute text-indigo-400 text-xs font-semibold uppercase tracking-widest pointer-events-none';
-            timerDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+            overlayText.text('Answer Completed');
+            overlayText.attr('class', 'absolute text-indigo-400 text-xs font-semibold uppercase tracking-widest pointer-events-none');
+            timerDot.attr('class', 'w-2.5 h-2.5 rounded-full bg-emerald-500');
             
             drawStaticWave();
         });
 
         // Action: Reset
-        btnReset.addEventListener('click', () => {
+        btnReset.on('click', () => {
             audioChunks = [];
             audioBlob = null;
             recordingDuration = 0;
 
-            timerText.innerText = '00:00.0';
-            timerDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-700';
-            overlayText.innerText = 'Microphone Inactive';
-            overlayText.className = 'absolute text-slate-500 text-xs font-semibold uppercase tracking-widest pointer-events-none';
+            timerText.text('00:00.0');
+            timerDot.attr('class', 'w-2.5 h-2.5 rounded-full bg-slate-700');
+            overlayText.text('Microphone Inactive');
+            overlayText.attr('class', 'absolute text-slate-500 text-xs font-semibold uppercase tracking-widest pointer-events-none');
 
-            btnUpload.disabled = true;
-            btnReset.disabled = true;
+            btnUpload.prop('disabled', true);
+            btnReset.prop('disabled', true);
 
             drawStaticWave();
         });
@@ -607,11 +606,11 @@
         let cachedResults = {};
 
         // Action: Submit for Analysis
-        btnUpload.addEventListener('click', () => {
+        btnUpload.on('click', () => {
             if (!audioBlob) return;
 
-            btnUpload.disabled = true;
-            btnReset.disabled = true;
+            btnUpload.prop('disabled', true);
+            btnReset.prop('disabled', true);
             showProcessingModal('Uploading recording to SpeechIQ backend...');
 
             // Generate a temporary unique ID
@@ -625,37 +624,36 @@
 
             const submitUrl = '{{ route("practice.interview.submit", $test->id) }}';
 
-            fetch(submitUrl, {
+            $.ajax({
+                url: submitUrl,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: formData
+                data: formData,
+                processData: false,
+                contentType: false
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Submission failed');
-                return res.json();
-            })
-            .then(data => {
+            .done(data => {
                 if (data.success) {
                     const realId = data.recording_id;
 
                     // Update DOM element IDs from tempId to realId
-                    const bubbleUser = document.getElementById(`bubble-user-${tempId}`);
-                    if (bubbleUser) bubbleUser.id = `bubble-user-${realId}`;
+                    const bubbleUser = $(`#bubble-user-${tempId}`);
+                    if (bubbleUser.length) bubbleUser.attr('id', `bubble-user-${realId}`);
 
-                    const transcriptText = document.getElementById(`transcript-text-${tempId}`);
-                    if (transcriptText) transcriptText.id = `transcript-text-${realId}`;
+                    const transcriptText = $(`#transcript-text-${tempId}`);
+                    if (transcriptText.length) transcriptText.attr('id', `transcript-text-${realId}`);
 
-                    const quickFeedback = document.getElementById(`quick-feedback-${tempId}`);
-                    if (quickFeedback) quickFeedback.id = `quick-feedback-${realId}`;
+                    const quickFeedback = $(`#quick-feedback-${tempId}`);
+                    if (quickFeedback.length) quickFeedback.attr('id', `quick-feedback-${realId}`);
 
-                    const bubbleScore = document.getElementById(`bubble-score-${tempId}`);
-                    if (bubbleScore) bubbleScore.id = `bubble-score-${realId}`;
+                    const bubbleScore = $(`#bubble-score-${tempId}`);
+                    if (bubbleScore.length) bubbleScore.attr('id', `bubble-score-${realId}`);
 
-                    const viewMetricsBtn = quickFeedback ? quickFeedback.querySelector('button') : null;
-                    if (viewMetricsBtn) {
-                        viewMetricsBtn.setAttribute('onclick', `showScorecard(${realId})`);
+                    const viewMetricsBtn = quickFeedback.length ? quickFeedback.find('button') : null;
+                    if (viewMetricsBtn && viewMetricsBtn.length) {
+                        viewMetricsBtn.attr('onclick', `showScorecard(${realId})`);
                     }
 
                     showProcessingModal('Enqueuing audio. Contacting AI Engine...');
@@ -663,13 +661,13 @@
                 } else {
                     hideProcessingModal();
                     alert('Error: ' + data.message);
-                    btnUpload.disabled = false;
+                    btnUpload.prop('disabled', false);
                 }
             })
-            .catch(err => {
+            .fail((xhr, status, err) => {
                 hideProcessingModal();
-                alert('Upload failed: ' + err.message);
-                btnUpload.disabled = false;
+                alert('Upload failed: ' + err);
+                btnUpload.prop('disabled', false);
             });
         });
 
@@ -682,9 +680,8 @@
 
             pollInterval = setInterval(() => {
                 checkCount++;
-                fetch(statusUrl)
-                    .then(res => res.json())
-                    .then(data => {
+                $.getJSON(statusUrl)
+                    .done(data => {
                         if (data.success) {
                             if (data.status === 'processing') {
                                 showProcessingModal('SpeechIQ: Running transcription and metric evaluations...');
@@ -696,11 +693,11 @@
                                 clearInterval(pollInterval);
                                 hideProcessingModal();
                                 alert('AI Analysis failed. Please reset and record response again.');
-                                btnUpload.disabled = false;
+                                btnUpload.prop('disabled', false);
                             }
                         }
                     })
-                    .catch(err => {
+                    .fail((xhr, status, err) => {
                         console.error('Polling error:', err);
                     });
 
@@ -709,7 +706,7 @@
                     clearInterval(pollInterval);
                     hideProcessingModal();
                     alert('Analysis timed out. Please check your Laravel queue worker.');
-                    btnUpload.disabled = false;
+                    btnUpload.prop('disabled', false);
                 }
             }, 2000);
         }
@@ -717,9 +714,8 @@
         // Fetch detailed results
         function fetchResults(recordingId) {
             const resultsUrl = '{{ route("practice.interview.results", ":id") }}'.replace(':id', recordingId);
-            fetch(resultsUrl)
-                .then(res => res.json())
-                .then(data => {
+            $.getJSON(resultsUrl)
+                .done(data => {
                     hideProcessingModal();
                     if (data.success) {
                         const result = data.result;
@@ -736,12 +732,13 @@
                         });
 
                         // Update Chat bubble transcript text
-                        document.getElementById(`transcript-text-${recordingId}`).innerText = `"${result.transcript}"`;
-                        document.getElementById(`transcript-text-${recordingId}`).className = "text-slate-100 italic text-sm";
+                        const tx = $(`#transcript-text-${recordingId}`);
+                        tx.text(`"${result.transcript}"`);
+                        tx.attr('class', "text-slate-100 italic text-sm");
                         
                         // Display score and metric trigger
-                        document.getElementById(`bubble-score-${recordingId}`).innerText = `Overall: ${result.overall_score}%`;
-                        document.getElementById(`quick-feedback-${recordingId}`).classList.remove('hidden');
+                        $(`#bubble-score-${recordingId}`).text(`Overall: ${result.overall_score}%`);
+                        $(`#quick-feedback-${recordingId}`).removeClass('hidden');
 
                         // Show Right metrics card
                         showScorecard(recordingId);
@@ -753,7 +750,7 @@
                         setupNextQuestionAction();
                     }
                 })
-                .catch(err => {
+                .fail((xhr, status, err) => {
                     console.error('Fetch results error:', err);
                 });
         }
@@ -763,100 +760,99 @@
             const result = cachedResults[recordingId];
             if (!result) return;
 
-            cardDefault.classList.add('hidden');
-            cardActive.classList.remove('hidden');
+            cardDefault.addClass('hidden');
+            cardActive.removeClass('hidden');
 
             // Set scores
-            overallScoreVal.innerText = `${result.overall_score}%`;
-            overallProgress.setAttribute('stroke-dasharray', `${result.overall_score}, 100`);
+            overallScoreVal.text(`${result.overall_score}%`);
+            overallProgress.attr('stroke-dasharray', `${result.overall_score}, 100`);
 
             if (result.overall_score >= 85) {
-                overallText.innerText = "Excellent Articulation";
-                overallText.className = "text-sm font-bold text-emerald-400";
+                overallText.text("Excellent Articulation");
+                overallText.attr('class', "text-sm font-bold text-emerald-400");
             } else if (result.overall_score >= 70) {
-                overallText.innerText = "Good Competency";
-                overallText.className = "text-sm font-bold text-indigo-400";
+                overallText.text("Good Competency");
+                overallText.attr('class', "text-sm font-bold text-indigo-400");
             } else {
-                overallText.innerText = "Requires Practice";
-                overallText.className = "text-sm font-bold text-amber-500";
+                overallText.text("Requires Practice");
+                overallText.attr('class', "text-sm font-bold text-amber-500");
             }
 
-            scoreGrammar.innerText = `${result.grammar_score}%`;
-            barGrammar.style.width = `${result.grammar_score}%`;
+            scoreGrammar.text(`${result.grammar_score}%`);
+            barGrammar.css('width', `${result.grammar_score}%`);
             
-            scoreVocabulary.innerText = `${result.vocabulary_score}%`;
-            barVocabulary.style.width = `${result.vocabulary_score}%`;
+            scoreVocabulary.text(`${result.vocabulary_score}%`);
+            barVocabulary.css('width', `${result.vocabulary_score}%`);
             
-            scoreContent.innerText = `${result.content_score}%`;
-            barContent.style.width = `${result.content_score}%`;
+            scoreContent.text(`${result.content_score}%`);
+            barContent.css('width', `${result.content_score}%`);
             
-            scoreConfidence.innerText = `${result.confidence_score}%`;
-            barConfidence.style.width = `${result.confidence_score}%`;
+            scoreConfidence.text(`${result.confidence_score}%`);
+            barConfidence.css('width', `${result.confidence_score}%`);
             
-            scorePronunciation.innerText = `${result.pronunciation_score}%`;
-            barPronunciation.style.width = `${result.pronunciation_score}%`;
+            scorePronunciation.text(`${result.pronunciation_score}%`);
+            barPronunciation.css('width', `${result.pronunciation_score}%`);
             
-            scoreFluency.innerText = `${result.fluency_score}%`;
-            barFluency.style.width = `${result.fluency_score}%`;
+            scoreFluency.text(`${result.fluency_score}%`);
+            barFluency.css('width', `${result.fluency_score}%`);
 
-            accentText.innerText = result.accent || 'Neutral Accent';
-            suggestionsText.innerText = result.feedback || 'Good response structure.';
+            accentText.text(result.accent || 'Neutral Accent');
+            suggestionsText.text(result.feedback || 'Good response structure.');
         };
 
         // Determine if next question is generated or session is finalized
         function setupNextQuestionAction() {
             // Append action container dynamically
-            const actBox = document.createElement('div');
-            actBox.className = "flex justify-center pt-2";
-            actBox.id = "next-question-trigger-container";
+            const actBox = $('<div></div>')
+                .attr('id', 'next-question-trigger-container')
+                .addClass('flex justify-center pt-2');
 
             if (questionIndex < totalQuestions) {
-                actBox.innerHTML = `
+                actBox.html(`
                     <button type="button" id="btn-next-question" onclick="triggerNextQuestion()" class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white font-semibold rounded-xl text-sm transition duration-200 shadow-md">
                         Get Next Question
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </button>
-                `;
+                `);
             } else {
-                actBox.innerHTML = `
+                actBox.html(`
                     <button type="button" onclick="triggerFinishInterview()" class="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm transition duration-200 shadow-md">
                         Finish Interview & View Feedback
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </button>
-                `;
+                `);
             }
 
-            chatTimeline.appendChild(actBox);
-            chatTimeline.scrollTop = chatTimeline.scrollHeight;
+            chatTimeline.append(actBox);
+            chatTimeline.scrollTop(chatTimeline[0].scrollHeight);
         }
 
         // Action: Fetch Dynamic Next Question from FastAPI
         window.triggerNextQuestion = function() {
             // Remove the trigger button
-            const actContainer = document.getElementById('next-question-trigger-container');
-            if (actContainer) actContainer.remove();
+            $('#next-question-trigger-container').remove();
 
             showProcessingModal('Generating dynamic follow-up question...');
 
             const nextUrl = '{{ route("practice.interview.next-question", $test->id) }}';
 
-            fetch(nextUrl, {
+            $.ajax({
+                url: nextUrl,
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({
+                data: JSON.stringify({
                     context: interviewContext,
                     history: conversationHistory
                 })
             })
-            .then(res => res.json())
-            .then(data => {
+            .done(data => {
                 hideProcessingModal();
                 if (data.success) {
                     // Update index details
@@ -865,8 +861,8 @@
 
                     // Update session bar indicators
                     const pct = Math.min(100, (questionIndex / totalQuestions) * 100);
-                    progressBar.style.width = `${pct}%`;
-                    progressText.innerText = `Question ${questionIndex} of ${totalQuestions}`;
+                    progressBar.css('width', `${pct}%`);
+                    progressText.text(`Question ${questionIndex} of ${totalQuestions}`);
 
                     // Print next bubble
                     appendQuestionBubble(activeQuestionText);
@@ -877,7 +873,7 @@
                     alert('Error generating question: ' + data.message);
                 }
             })
-            .catch(err => {
+            .fail((xhr, status, err) => {
                 hideProcessingModal();
                 alert('Connection error. Could not contact AI Engine.');
             });
@@ -894,12 +890,12 @@
         };
 
         function showProcessingModal(message) {
-            processingMsg.innerText = message;
-            processingModal.classList.remove('hidden');
+            processingMsg.text(message);
+            processingModal.removeClass('hidden');
         }
 
         function hideProcessingModal() {
-            processingModal.classList.add('hidden');
+            processingModal.addClass('hidden');
         }
     </script>
 </x-user-layout>

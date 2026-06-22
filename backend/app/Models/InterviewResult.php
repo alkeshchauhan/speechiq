@@ -11,6 +11,7 @@ class InterviewResult extends Model
         'audio_recording_id',
         'question',
         'transcript',
+        'language',
         'grammar_score',
         'vocabulary_score',
         'content_score',
@@ -21,8 +22,11 @@ class InterviewResult extends Model
         'accent',
         'overall_score',
         'feedback',
+        'improvement_suggestions',
         'tone',
         'wpm',
+        'pause_count',
+        'pause_duration',
     ];
 
     protected $casts = [
@@ -35,6 +39,9 @@ class InterviewResult extends Model
         'fluency_score' => 'integer',
         'overall_score' => 'integer',
         'wpm' => 'integer',
+        'pause_count' => 'integer',
+        'pause_duration' => 'float',
+        'improvement_suggestions' => 'array',
         'tone' => 'string',
     ];
 

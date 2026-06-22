@@ -67,8 +67,14 @@ class SettingSeeder extends Seeder
             ],
             [
                 'setting_key' => 'GEMINI_MODEL',
-                'setting_value' => 'gemini-1.5-flash',
+                'setting_value' => 'gemini-2.5-flash',
                 'setting_type' => 'text',
+                'is_encrypted' => false
+            ],
+            [
+                'setting_key' => 'ENABLE_REPORTS',
+                'setting_value' => '1',
+                'setting_type' => 'boolean',
                 'is_encrypted' => false
             ],
         ];

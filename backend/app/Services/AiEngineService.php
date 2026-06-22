@@ -13,7 +13,7 @@ class AiEngineService
      */
     public function analyzeReadAloud(string $audioPath, string $targetText, float $duration = 0.0): array
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
 
         $fullPath = Storage::disk('public')->path($audioPath);
@@ -58,7 +58,7 @@ class AiEngineService
      */
     public function speechToText(string $audioPath): string
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
         $fullPath = Storage::disk('public')->path($audioPath);
 
@@ -94,7 +94,7 @@ class AiEngineService
      */
     public function analyzeInterview(string $audioPath, string $questionText, float $duration = 0.0): array
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
         $fullPath = Storage::disk('public')->path($audioPath);
 
@@ -133,7 +133,7 @@ class AiEngineService
      */
     public function generateQuestion(string $context, array $history = []): string
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
 
         try {
@@ -163,7 +163,7 @@ class AiEngineService
      */
     public function generateFeedback(string $question, string $transcript): string
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
 
         try {
@@ -194,7 +194,7 @@ class AiEngineService
      */
     public function textToSpeech(string $text): string
     {
-        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8000');
+        $apiUrl = setting('AI_API_URL', 'http://127.0.0.1:8001');
         $apiToken = setting('AI_API_TOKEN');
 
         try {
@@ -234,7 +234,7 @@ class AiEngineService
     {
         return [
             'X-Gemini-Key'   => setting('GEMINI_API_KEY') ?: '',
-            'X-Gemini-Model' => setting('GEMINI_MODEL', 'gemini-1.5-flash'),
+            'X-Gemini-Model' => setting('GEMINI_MODEL', 'gemini-2.5-flash'),
             'X-Use-Gemini'   => '1',
         ];
     }

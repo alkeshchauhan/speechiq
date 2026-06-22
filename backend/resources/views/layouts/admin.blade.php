@@ -12,12 +12,65 @@
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
         <style>
             body { font-family: 'Outfit', sans-serif; }
-            #admin-sidebar { transition: transform 0.25s ease; }
-            #admin-overlay { transition: opacity 0.25s ease; }
+
+            /* Mobile View (default) */
+            #admin-sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                z-index: 50 !important;
+                width: 16rem !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.25s ease !important;
+                display: flex !important;
+            }
+            #admin-sidebar.open {
+                transform: translateX(0) !important;
+            }
+            #admin-overlay {
+                position: fixed !important;
+                inset: 0 !important;
+                z-index: 40 !important;
+                background-color: rgba(2, 6, 23, 0.7) !important;
+                backdrop-filter: blur(4px) !important;
+                display: none !important;
+                opacity: 0;
+                transition: opacity 0.25s ease !important;
+            }
+            #admin-overlay.open {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            #btn-sidebar-open {
+                display: block !important;
+            }
+            .lg\:hidden {
+                display: block !important;
+            }
+
+            /* Desktop View (>= 1024px) */
+            @media (min-width: 1024px) {
+                #admin-sidebar {
+                    position: relative !important;
+                    transform: translateX(0) !important;
+                    display: flex !important;
+                }
+                #admin-overlay {
+                    display: none !important;
+                }
+                #btn-sidebar-open {
+                    display: none !important;
+                }
+                .lg\:hidden {
+                    display: none !important;
+                }
+            }
         </style>
     </head>
     <body class="antialiased bg-slate-900 text-slate-100 min-h-screen flex">
@@ -138,20 +191,69 @@
             <!-- Main Content Slot -->
             <main class="flex-1 overflow-y-auto p-4 md:p-8">
                 @if (session('success'))
-                    <div class="mb-6 p-4 bg-emerald-950/50 border border-emerald-900 rounded-xl text-emerald-400 text-sm flex items-center">
-                        <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        {{ session('success') }}
+                    <div id="alert-success" class="mb-6 p-4 bg-emerald-500/10 border-l-4 border-emerald-500 border border-emerald-500/20 rounded-xl text-emerald-300 text-sm flex items-center justify-between shadow-lg shadow-emerald-950/20 backdrop-blur-sm transition-all duration-300">
+                        <div class="flex items-center">
+                            <span class="p-2 bg-emerald-500/25 text-emerald-400 rounded-lg mr-3 shadow-inner">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <span class="font-bold text-white block mb-0.5">Success</span>
+                                <span>{{ session('success') }}</span>
+                            </div>
+                        </div>
+                        <button onclick="$('#alert-success').remove()" class="p-1.5 hover:bg-emerald-500/20 text-emerald-450 hover:text-white rounded-lg transition-colors ml-4 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 @endif
 
                 @if (session('error'))
-                    <div class="mb-6 p-4 bg-rose-950/50 border border-rose-900 rounded-xl text-rose-400 text-sm flex items-center">
-                        <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        {{ session('error') }}
+                    <div id="alert-error" class="mb-6 p-4 bg-rose-500/10 border-l-4 border-rose-500 border border-rose-500/20 rounded-xl text-rose-300 text-sm flex items-center justify-between shadow-lg shadow-rose-950/20 backdrop-blur-sm transition-all duration-300">
+                        <div class="flex items-center">
+                            <span class="p-2 bg-rose-500/25 text-rose-400 rounded-lg mr-3 shadow-inner">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <span class="font-bold text-white block mb-0.5">Error</span>
+                                <span>{{ session('error') }}</span>
+                            </div>
+                        </div>
+                        <button onclick="$('#alert-error').remove()" class="p-1.5 hover:bg-rose-500/20 text-rose-450 hover:text-white rounded-lg transition-colors ml-4 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div id="alert-validation" class="mb-6 p-4 bg-rose-500/10 border-l-4 border-rose-500 border border-rose-500/20 rounded-xl text-rose-300 text-sm flex items-start justify-between shadow-lg shadow-rose-950/20 backdrop-blur-sm transition-all duration-300">
+                        <div class="flex items-start">
+                            <span class="p-2 bg-rose-500/25 text-rose-400 rounded-lg mr-3 shadow-inner mt-0.5">
+                                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <span class="font-bold text-white block mb-1">Validation Errors</span>
+                                <ul class="list-disc list-inside space-y-1 text-rose-200">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                        <button onclick="$('#alert-validation').remove()" class="p-1.5 hover:bg-rose-500/20 text-rose-450 hover:text-white rounded-lg transition-colors ml-4 shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
                 @endif
 
@@ -161,20 +263,16 @@
 
         <!-- Sidebar JS -->
         <script>
-            const adminSidebar = document.getElementById('admin-sidebar');
-            const adminOverlay = document.getElementById('admin-overlay');
-
             function openSidebar() {
-                adminSidebar.classList.remove('-translate-x-full');
-                adminOverlay.classList.remove('hidden', 'opacity-0');
-                document.body.style.overflow = 'hidden';
+                $('#admin-sidebar').addClass('open');
+                $('#admin-overlay').addClass('open');
+                $('body').css('overflow', 'hidden');
             }
 
             function closeSidebar() {
-                adminSidebar.classList.add('-translate-x-full');
-                adminOverlay.classList.add('opacity-0');
-                setTimeout(() => adminOverlay.classList.add('hidden'), 250);
-                document.body.style.overflow = '';
+                $('#admin-sidebar').removeClass('open');
+                $('#admin-overlay').removeClass('open');
+                $('body').css('overflow', '');
             }
         </script>
     </body>

@@ -12,6 +12,7 @@ class ReadAloudResult extends Model
     protected $fillable = [
         'audio_recording_id',
         'transcript',
+        'language',
         'pronunciation_score',
         'fluency_score',
         'accuracy_score',
@@ -27,12 +28,15 @@ class ReadAloudResult extends Model
         'confidence_score',
         'speech_rate',
         'long_pauses',
+        'feedback',
+        'improvement_suggestions',
     ];
 
     protected $casts = [
         'missing_words' => 'array',
         'extra_words' => 'array',
         'correct_words' => 'array',
+        'improvement_suggestions' => 'array',
         'pause_duration' => 'float',
         'similarity_percentage' => 'float',
         'confidence_score' => 'integer',
