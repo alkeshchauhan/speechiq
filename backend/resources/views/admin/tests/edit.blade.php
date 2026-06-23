@@ -1,6 +1,6 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold leading-tight text-white">Edit Test</h2>
+        <h2 class="text-lg sm:text-xl font-bold text-white truncate">Edit Test</h2>
     </x-slot>
 
     <div class="max-w-xl mx-auto">

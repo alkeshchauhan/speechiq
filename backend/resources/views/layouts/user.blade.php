@@ -173,16 +173,16 @@
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Header -->
             <header class="h-16 border-b border-slate-800 bg-slate-950/50 backdrop-blur flex items-center justify-between px-4 md:px-8 sticky top-0 z-30">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 min-w-0">
                     <!-- Mobile sidebar toggle -->
                     <button id="btn-sidebar-open" onclick="openSidebar()"
-                            class="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                            class="lg:hidden p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
-                    <div>
-                        <h2 class="text-base md:text-lg font-bold text-white tracking-tight">
+                    <div class="min-w-0">
+                        <h2 class="text-sm md:text-lg font-bold text-white tracking-tight truncate">
                             @if(request()->routeIs('dashboard'))
                                 Dashboard
                             @elseif(request()->routeIs('practice.read-aloud.*'))

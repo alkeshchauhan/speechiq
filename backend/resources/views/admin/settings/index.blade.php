@@ -1,6 +1,6 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-bold leading-tight text-white">System Settings</h2>
+        <h2 class="text-lg sm:text-xl font-bold text-white truncate">System Settings</h2>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-8">
@@ -130,7 +130,7 @@
                                 <input type="checkbox" name="ENABLE_AI_INTERVIEW" class="sr-only peer"
                                     {{ filter_var($settings['ENABLE_AI_INTERVIEW']->setting_value ?? false, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <div
-                                    class="w-9 h-5 bg-slate-850 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
+                                    class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
                                 </div>
                             </label>
                         </div>
@@ -149,7 +149,7 @@
                                 <input type="checkbox" name="ENABLE_READ_ALOUD" class="sr-only peer"
                                     {{ filter_var($settings['ENABLE_READ_ALOUD']->setting_value ?? false, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <div
-                                    class="w-9 h-5 bg-slate-850 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
+                                    class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
                                 </div>
                             </label>
                         </div>
@@ -168,7 +168,7 @@
                                 <input type="checkbox" name="ENABLE_TTS" class="sr-only peer"
                                     {{ filter_var($settings['ENABLE_TTS']->setting_value ?? false, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <div
-                                    class="w-9 h-5 bg-slate-850 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
+                                    class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
                                 </div>
                             </label>
                         </div>
@@ -187,7 +187,7 @@
                                 <input type="checkbox" name="ENABLE_STT" class="sr-only peer"
                                     {{ filter_var($settings['ENABLE_STT']->setting_value ?? false, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <div
-                                    class="w-9 h-5 bg-slate-850 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
+                                    class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
                                 </div>
                             </label>
                         </div>
@@ -207,7 +207,7 @@
                                 <input type="checkbox" name="ENABLE_REPORTS" class="sr-only peer"
                                     {{ filter_var($settings['ENABLE_REPORTS']->setting_value ?? false, FILTER_VALIDATE_BOOLEAN) ? 'checked' : '' }}>
                                 <div
-                                    class="w-9 h-5 bg-slate-850 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
+                                    class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600 peer-checked:after:bg-white">
                                 </div>
                             </label>
                         </div>

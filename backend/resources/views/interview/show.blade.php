@@ -2,20 +2,20 @@
     <div class="max-w-5xl mx-auto space-y-8">
         
         <!-- Navigation Header -->
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-            <div class="space-y-1">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-4 gap-4">
+            <div class="space-y-1 min-w-0">
                 <a href="{{ route('practice.interview.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white transition duration-200">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                     Exit Workspace
                 </a>
-                <h1 class="text-xl font-bold text-white mt-2">{{ $test->title }}</h1>
+                <h1 class="text-lg sm:text-xl font-bold text-white mt-1.5 truncate" title="{{ $test->title }}">{{ $test->title }}</h1>
             </div>
             
-            <div class="flex items-center gap-3">
-                <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider">Session Progress:</span>
-                <div class="w-32 bg-slate-900 border border-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="flex items-center gap-3 shrink-0 justify-between sm:justify-start">
+                <span class="text-[10px] sm:text-xs text-slate-500 font-semibold uppercase tracking-wider">Progress:</span>
+                <div class="flex-1 sm:flex-initial w-24 sm:w-32 bg-slate-900 border border-slate-800 h-2 rounded-full overflow-hidden">
                     <div id="session-progress" class="bg-gradient-to-r from-indigo-500 to-cyan-500 h-full rounded-full transition-all duration-300" style="width: 33%;"></div>
                 </div>
                 <span id="session-progress-text" class="text-xs font-bold text-slate-300">Question 1 of 3</span>

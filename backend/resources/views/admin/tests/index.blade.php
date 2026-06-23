@@ -1,9 +1,13 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold leading-tight text-white">Test Management</h2>
-            <a href="{{ route('admin.tests.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition duration-200 shadow-md">
-                Create New Test
+        <div class="flex items-center justify-between gap-4 min-w-0">
+            <h2 class="text-lg sm:text-xl font-bold text-white truncate">Test Management</h2>
+            <a href="{{ route('admin.tests.create') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition duration-200 shadow-md shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="hidden sm:inline">Create New Test</span>
+                <span class="sm:hidden">Create</span>
             </a>
         </div>
     </x-slot>

@@ -24,7 +24,7 @@ class AiEngineService
         }
 
         try {
-            $request = Http::timeout(90)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(90)->withHeaders($this->getAiHeaders());
             
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
@@ -67,7 +67,7 @@ class AiEngineService
         }
 
         try {
-            $request = Http::timeout(90)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(90)->withHeaders($this->getAiHeaders());
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
             }
@@ -103,7 +103,7 @@ class AiEngineService
         }
 
         try {
-            $request = Http::timeout(90)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(90)->withHeaders($this->getAiHeaders());
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
             }
@@ -137,7 +137,7 @@ class AiEngineService
         $apiToken = setting('AI_API_TOKEN');
 
         try {
-            $request = Http::timeout(90)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(90)->withHeaders($this->getAiHeaders());
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
             }
@@ -167,7 +167,7 @@ class AiEngineService
         $apiToken = setting('AI_API_TOKEN');
 
         try {
-            $request = Http::timeout(90)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(90)->withHeaders($this->getAiHeaders());
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
             }
@@ -198,7 +198,7 @@ class AiEngineService
         $apiToken = setting('AI_API_TOKEN');
 
         try {
-            $request = Http::timeout(30)->withHeaders($this->getAiHeaders());
+            $request = Http::withoutVerifying()->timeout(30)->withHeaders($this->getAiHeaders());
             if (!empty($apiToken)) {
                 $request = $request->withToken($apiToken);
             }

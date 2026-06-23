@@ -1,8 +1,8 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div>
-            <h2 class="text-xl font-bold leading-tight text-white">Admin Dashboard</h2>
-            <p class="text-sm text-slate-400 mt-1">Overview of system health, usage, and AI integrations.</p>
+        <div class="min-w-0">
+            <h2 class="text-lg sm:text-xl font-bold text-white truncate">Admin Dashboard</h2>
+            <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 truncate">Overview of system health, usage, and AI integrations.</p>
         </div>
     </x-slot>
 

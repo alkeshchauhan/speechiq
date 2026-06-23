@@ -56,24 +56,42 @@ class SettingService extends BaseService
      */
     public function updateBulk(array $settings): void
     {
+        // Default configurations for settings if they don't exist in the database yet
+        $defaults = [
+            'AI_API_URL' => ['type' => 'text', 'encrypted' => false],
+            'AI_API_TOKEN' => ['type' => 'password', 'encrypted' => true],
+            'ENABLE_AI_INTERVIEW' => ['type' => 'boolean', 'encrypted' => false],
+            'ENABLE_READ_ALOUD' => ['type' => 'boolean', 'encrypted' => false],
+            'ENABLE_TTS' => ['type' => 'boolean', 'encrypted' => false],
+            'ENABLE_STT' => ['type' => 'boolean', 'encrypted' => false],
+            'GEMINI_API_KEY' => ['type' => 'password', 'encrypted' => true],
+            'GEMINI_MODEL' => ['type' => 'text', 'encrypted' => false],
+            'ENABLE_REPORTS' => ['type' => 'boolean', 'encrypted' => false],
+        ];
+
         foreach ($settings as $key => $value) {
             $settingModel = $this->settingRepository->getByKey($key);
             if ($settingModel) {
                 $type = $settingModel->setting_type;
                 $isEncrypted = $settingModel->is_encrypted;
-
-                // For password setting types, don't overwrite if it's masked or empty
-                if ($type === 'password' && ($value === '********' || empty($value))) {
-                    continue;
-                }
-
-                // Cast boolean to '1' or '0' string representation for db text field
-                if ($type === 'boolean') {
-                    $value = $value ? '1' : '0';
-                }
-
-                $this->set($key, $value, $type, $isEncrypted);
+            } elseif (array_key_exists($key, $defaults)) {
+                $type = $defaults[$key]['type'];
+                $isEncrypted = $defaults[$key]['encrypted'];
+            } else {
+                continue;
             }
+
+            // For password setting types, don't overwrite if it's masked or empty
+            if ($type === 'password' && ($value === '********' || empty($value))) {
+                continue;
+            }
+
+            // Cast boolean to '1' or '0' string representation for db text field
+            if ($type === 'boolean') {
+                $value = $value ? '1' : '0';
+            }
+
+            $this->set($key, $value, $type, $isEncrypted);
         }
     }
 

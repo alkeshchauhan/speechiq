@@ -1,12 +1,15 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-xl font-bold leading-tight text-white">{{ $test->title }}</h2>
-                <p class="text-xs text-slate-400 mt-1">{{ $test->type === 'READ_ALOUD' ? 'Read Aloud Test' : 'AI Interview Test' }}</p>
+        <div class="flex items-center justify-between gap-4 min-w-0">
+            <div class="min-w-0">
+                <h2 class="text-base sm:text-xl font-bold leading-tight text-white truncate" title="{{ $test->title }}">{{ $test->title }}</h2>
+                <p class="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 truncate">{{ $test->type === 'READ_ALOUD' ? 'Read Aloud Test' : 'AI Interview Test' }}</p>
             </div>
-            <a href="{{ route('admin.tests.index') }}" class="text-slate-400 hover:text-white text-xs font-semibold uppercase tracking-wider transition duration-150">
-                &larr; Back to Tests
+            <a href="{{ route('admin.tests.index') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold transition duration-150 shrink-0 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <span class="hidden sm:inline">Back to Tests</span>
             </a>
         </div>
     </x-slot>

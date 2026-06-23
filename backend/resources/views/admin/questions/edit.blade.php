@@ -1,9 +1,12 @@
 <x-admin-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold leading-tight text-white">Edit Question</h2>
-            <a href="{{ route('admin.tests.show', $test->id) }}" class="text-slate-400 hover:text-white text-xs font-semibold uppercase tracking-wider transition duration-150">
-                &larr; Back to Test
+        <div class="flex items-center justify-between gap-4 min-w-0">
+            <h2 class="text-lg sm:text-xl font-bold text-white truncate">Edit Question</h2>
+            <a href="{{ route('admin.tests.show', $test->id) }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold transition duration-150 shrink-0 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <span class="hidden sm:inline">Back to Test</span>
             </a>
         </div>
     </x-slot>
